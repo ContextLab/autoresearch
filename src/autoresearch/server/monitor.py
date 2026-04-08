@@ -25,11 +25,11 @@ def get_status(ssh: SSHClient) -> dict:
     cmd = (
         'for dir in ~/autoresearch/checkpoints/gpu*/; do '
         '[ -d "$dir" ] || continue; '
-        'sf="$dir/state.json"; '
+        'for sf in "$dir"/state.json "$dir"/gpu*.json; do '
         '[ -f "$sf" ] || continue; '
         'cat "$sf"; '
         'echo "---SEPARATOR---"; '
-        'done'
+        'break; done; done'
     )
     result = ssh.run(cmd, timeout=30)
 
