@@ -6,6 +6,12 @@ dist/
 wheels/
 *.egg-info
 
+# macOS
+.DS_Store
+
+# OMC state
+.omc/
+
 # Virtual environments
 .venv
 worktrees/
@@ -16,8 +22,20 @@ queue/
 CLAUDE.md
 AGENTS.md
 
+# Claude Code credentials/state
+.claude/
+
 # Experimental code/artifacts
 dev/
 
 # Results file
 results.tsv
+
+# Credentials (contains secrets)
+credentials.yaml
+.autoresearch/
+
+# Checkpoints and logs (synced from server)
+checkpoints/
+run.log
+notes/

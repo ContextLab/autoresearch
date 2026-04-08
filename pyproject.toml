@@ -1,24 +1,49 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
 [project]
 name = "autoresearch"
-version = "0.1.0"
-description = "Autonomous pretraining research swarm"
+version = "0.2.0"
+description = "Autonomous AI research on remote GPU servers"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
+    "click>=8.1",
+    "fastapi>=0.100",
+    "openai>=1.0",
+    "pyyaml>=6.0",
+    "requests>=2.32.0",
+    "uvicorn>=0.20",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+]
+training = [
     "kernels>=0.11.7",
     "matplotlib>=3.10.8",
     "numpy>=2.2.6",
     "pandas>=2.3.3",
     "pyarrow>=21.0.0",
-    "requests>=2.32.0",
     "rustbpe>=0.1.0",
     "tiktoken>=0.11.0",
     "torch==2.9.1",
 ]
 
+[project.scripts]
+autoresearch = "autoresearch.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/autoresearch"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
 [tool.uv.sources]
 torch = [
-    { index = "pytorch-cu128" },
+    { index = "pytorch-cu128", marker = "sys_platform == 'linux'" },
 ]
 
 [[tool.uv.index]]
