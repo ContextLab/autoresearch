@@ -177,6 +177,25 @@ fi
 export TMPDIR="$UV_TMPDIR"
 mkdir -p "$TMPDIR"
 
+# ── 5b. Install system tools via conda ─────────────────────────────────
+# ffmpeg/ffprobe needed by multitrans benchmark (audio processing)
+if command -v ffprobe &>/dev/null; then
+    echo "ffmpeg already installed — skipping"
+else
+    echo "Installing ffmpeg via conda..."
+    conda install -y -n "$ENV_NAME" -c conda-forge ffmpeg
+    echo "ffmpeg installed"
+fi
+
+# espeak-ng needed by phonemizer (IPA transcription)
+if command -v espeak-ng &>/dev/null || command -v espeak &>/dev/null; then
+    echo "espeak already installed — skipping"
+else
+    echo "Installing espeak-ng via conda..."
+    conda install -y -n "$ENV_NAME" -c conda-forge espeak-ng
+    echo "espeak-ng installed"
+fi
+
 # ── 6. Install packages via uv ──────────────────────────────────────────
 # Install torch with CUDA 12.8 wheels (compatible with vllm prebuilt wheels)
 if python -c "import torch" &>/dev/null; then
