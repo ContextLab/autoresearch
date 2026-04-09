@@ -104,19 +104,6 @@ def apply_diff(original: str, diff_text: str) -> str:
                 new = match.group(2).strip()
                 if old in result:
                     result = result.replace(old, new, 1)
-                else:
-                    # Fuzzy match: try matching first meaningful line
-                    old_lines = [l for l in old.split("\n") if l.strip()]
-                    if old_lines:
-                        first_line = old_lines[0].strip()
-                        if first_line in result and len(first_line) > 10:
-                            # Find the block starting at first_line
-                            idx = result.index(first_line)
-                            # Replace from first_line through len(old) chars
-                            end_idx = idx + len(old)
-                            if end_idx > len(result):
-                                end_idx = len(result)
-                            result = result[:idx] + new + result[end_idx:]
             break
     return result
 
