@@ -192,7 +192,15 @@ def run_experiment_loop(
                     if len(editable_content) > MAX_PROMPT_CHARS:
                         editable_content += "\n(remaining files omitted for brevity)\n"
                         break
-            results_history = tsv_path.read_text() if tsv_path.exists() else "No results yet."
+            if tsv_path.exists():
+                tsv_lines = tsv_path.read_text().strip().split("\n")
+                # Keep header + last 10 results to avoid huge prompts
+                if len(tsv_lines) > 11:
+                    results_history = tsv_lines[0] + "\n" + "\n".join(tsv_lines[-10:])
+                else:
+                    results_history = "\n".join(tsv_lines)
+            else:
+                results_history = "No results yet."
             logger.info("Read %d chars of code context, building prompt...", len(editable_content))
 
             # Build prompt and call agent
@@ -285,8 +293,12 @@ def run_experiment_loop(
             status = results["status"]
 
             if status == "crash":
-                logger.warning("Run crashed, reverting commit")
-                update_results_tsv(tsv_path, current_commit, primary_value, 0.0, "crash", description)
+                # Include last error line in description so model can learn
+                error_lines = [l.strip() for l in log_content.split("\n") if l.strip() and "Error" in l]
+                crash_desc = error_lines[-1][:150] if error_lines else "unknown error"
+                logger.warning("Run crashed: %s", crash_desc)
+                update_results_tsv(tsv_path, current_commit, primary_value, 0.0, "crash",
+                                   f"{description[:80]} | ERROR: {crash_desc}")
                 _git(["reset", "--hard", "HEAD~1"], cwd=str(work_dir))
             elif cfg.is_improvement(primary_value, best_metric):
                 best_metric = primary_value
