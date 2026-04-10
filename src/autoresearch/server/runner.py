@@ -173,25 +173,15 @@ def run_experiment_loop(
         logger.info("=== Iteration %d ===", iteration)
 
         try:
-            # Read current files — keep total prompt under 4000 chars for fast generation
-            MAX_PROMPT_CHARS = 6000
-            MAX_FILE_CHARS = 2000
+            # Read current files — send full content for accurate SEARCH/REPLACE
             logger.info("Reading program.md and editable files...")
             program_md = program_md_path.read_text() if program_md_path.exists() else ""
-            # Truncate program.md to goal + constraints + directions only
-            if len(program_md) > 1500:
-                program_md = program_md[:1500] + "\n... (see full program.md for details)"
             editable_content = ""
             for fpath in cfg.editable_files:
                 full = work_dir / fpath
                 if full.exists():
                     content = full.read_text()
-                    if len(content) > MAX_FILE_CHARS:
-                        content = content[:MAX_FILE_CHARS] + "\n..."
-                    editable_content += f"\n### {fpath}\n```\n{content}\n```\n"
-                    if len(editable_content) > MAX_PROMPT_CHARS:
-                        editable_content += "\n(remaining files omitted for brevity)\n"
-                        break
+                    editable_content += f"\n### {fpath}\n```python\n{content}\n```\n"
             if tsv_path.exists():
                 tsv_lines = tsv_path.read_text().strip().split("\n")
                 # Keep header + last 10 results to avoid huge prompts

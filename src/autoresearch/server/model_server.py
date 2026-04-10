@@ -91,7 +91,7 @@ def chat_completions(request: ChatRequest):
         input_text = "\n".join(f"{m['role']}: {m['content']}" for m in messages)
         input_text += "\nassistant: "
 
-    inputs = _tokenizer(input_text, return_tensors="pt", truncation=True, max_length=4096)
+    inputs = _tokenizer(input_text, return_tensors="pt", truncation=True, max_length=24000)
     # For multi-GPU device_map="auto", put inputs on the first device
     first_device = next(iter(_model.hf_device_map.values())) if hasattr(_model, "hf_device_map") else _model.device
     inputs = {k: v.to(first_device) for k, v in inputs.items()}

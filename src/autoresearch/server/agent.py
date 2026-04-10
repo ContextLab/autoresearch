@@ -126,7 +126,7 @@ def call_agent(
     prompt: str,
     base_url: str = "http://localhost:8000/v1",
     model: str = "default",
-    max_tokens: int = 2048,
+    max_tokens: int = 4096,
     temperature: float = 0.7,
     timeout: int = 600,
 ) -> str:
